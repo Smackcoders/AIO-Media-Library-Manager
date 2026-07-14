@@ -1,0 +1,200 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
+
+/* Audie Data Migrator premium design tokens */
+#my-react-container,
+.aioml_sidebar {
+    --aioml-accent: #3d4fdb;
+    --aioml-accent-strong: #2f3cb0;
+    --aioml-accent-50: #eef1ff;
+    --aioml-panel: #ffffff;
+    --aioml-hairline: #e2e8f0;
+    --aioml-hairline-soft: #e9eef5;
+    --aioml-ink: #0f172a;
+    --aioml-ink-muted: #64748b;
+    --aioml-slate-50: #f8fafc;
+    --aioml-shadow-xs: 0 1px 0 rgba(15, 23, 42, .04);
+    --aioml-radius: 8px;
+    --aioml-radius-lg: 14px;
+    --aioml-font-sans: 'Inter Tight', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* ============================================================
+   REACT SIDEBAR (DESKTOP DEFAULT)
+   ============================================================ */
+#my-react-container {
+    position: fixed;
+    top: 32px; /* below admin bar */
+    left: 160px; /* WordPress admin menu width */
+    width: 290px;
+    height: calc(100vh - 32px);
+    background: var(--aioml-panel, #ffffff);
+    border-right: 1px solid var(--aioml-hairline, #e2e8f0);
+    box-shadow: var(--aioml-shadow-xs, 0 1px 0 rgba(15, 23, 42, .04));
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 200;
+    box-sizing: border-box;
+    font-family: var(--aioml-font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+#my-react-container::-webkit-scrollbar {
+    width: 6px;
+}
+#my-react-container::-webkit-scrollbar-track {
+    background: transparent;
+}
+#my-react-container::-webkit-scrollbar-thumb {
+    background: var(--aioml-hairline, #e2e8f0);
+    border-radius: 3px;
+}
+#my-react-container::-webkit-scrollbar-thumb:hover {
+    background: var(--aioml-ink-muted, #64748b);
+}
+
+/* ============================================================
+   WP NOTICES (SHIFTED RIGHT OF SIDEBAR)
+   ============================================================ */
+body.upload-php #wpbody-content > .notice,
+body.upload-php #wpbody-content > .updated,
+body.upload-php #wpbody-content > .error,
+body.upload-php #wpbody-content > .update-nag {
+    margin-left: calc(20px + 290px) !important;
+    width: calc(100% - (20px + 290px)) !important;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 9999;
+}
+
+/* ============================================================
+   MAIN MEDIA CONTENT (LIST + GRID)
+   ============================================================ */
+body.upload-php .wrap {
+    margin-left: calc(20px + 290px) !important;
+    width: calc(100% - (20px + 290px)) !important;
+    box-sizing: border-box;
+}
+
+body.upload-php .media-views {
+    margin-left: calc(20px + 290px) !important;
+    width: calc(100% - (20px + 290px)) !important;
+    box-sizing: border-box;
+}
+
+body.upload-php .media-toolbar,
+body.upload-php .media-frame-content,
+body.upload-php .attachments-browser,
+body.upload-php .attachments {
+    width: 100% !important;
+    box-sizing: border-box !important;
+}
+
+html, body, #wpcontent, #wpbody-content {
+    overflow-x: hidden !important;
+}
+
+/* ============================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* ------------------------------
+   1500px — Medium Desktops
+   ------------------------------ */
+@media (max-width: 1500px) {
+    #my-react-container {
+        width: 280px;
+    }
+
+    body.upload-php #wpbody-content > .notice,
+    body.upload-php .wrap,
+    body.upload-php .media-views {
+        margin-left: calc(20px + 280px) !important;
+        width: calc(100% - (20px + 280px)) !important;
+    }
+}
+
+/* ------------------------------
+   1200px — Tablets Landscape
+   ------------------------------ */
+@media (max-width: 1200px) {
+    #my-react-container {
+        width: 250px;
+    }
+
+    body.upload-php #wpbody-content > .notice,
+    body.upload-php .wrap,
+    body.upload-php .media-views {
+        margin-left: calc(20px + 250px) !important;
+        width: calc(100% - (20px + 250px)) !important;
+    }
+}
+
+/* ------------------------------
+   903px — Narrow Desktop / Tablet
+   (Critical Fix)
+   Sidebar moves to top
+   ------------------------------ */
+@media (max-width: 903px) {
+
+    /* Sidebar becomes top panel */
+    #my-react-container {
+        position: relative !important;
+        top: 0 !important;
+        left: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--aioml-hairline, #e2e8f0) !important;
+        box-shadow: none !important;
+        z-index: 300 !important;
+    }
+
+    /* WP notices full width */
+    body.upload-php #wpbody-content > .notice,
+    body.upload-php #wpbody-content > .updated,
+    body.upload-php #wpbody-content > .error,
+    body.upload-php #wpbody-content > .update-nag {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    /* Media content full width */
+    body.upload-php .wrap,
+    body.upload-php .media-views {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+
+    body.upload-php .media-frame-content,
+    body.upload-php .attachments-browser,
+    body.upload-php .attachments,
+    body.upload-php .media-toolbar {
+        width: 100% !important;
+        max-width: 100% !important;
+        margin: 0 !important;
+        padding: 0 10px !important;
+        box-sizing: border-box !important;
+    }
+}
+
+/* ------------------------------
+   782px — WordPress Mobile Admin
+   ------------------------------ */
+@media (max-width: 782px) {
+    #my-react-container {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    body.upload-php .media-toolbar,
+    body.upload-php .media-frame-content {
+        padding-left: 5px !important;
+        padding-right: 5px !important;
+    }
+}
+
+/* Dim the media items while being dragged */
+.aioml-dragging {
+    opacity: 0.35 !important;
+}
