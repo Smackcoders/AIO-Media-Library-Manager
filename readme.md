@@ -1,93 +1,148 @@
 # AIO Media Library Manager
 
+A WordPress media library folders plugin that lets you organize your media library into unlimited nested folders with drag-and-drop, then offload uploads to AWS S3 or Cloudflare R2 with automatic CDN URL rewriting.
 
+## Overview
 
-## Getting started
+The default WordPress media library dumps every image, video, PDF, and document into one long, unsorted grid. As a site grows, finding a specific file becomes a scavenger hunt. **AIO Media Library Manager** solves this by adding a real folder structure to the media library — a drag and drop media organizer built on top of WordPress's native attachment taxonomy, so folders behave like first-class citizens across the admin, the block editor, and the REST API.
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
+Beyond organization, the plugin also works as a WordPress CDN offload plugin: connect an AWS S3 or Cloudflare R2 bucket and new uploads (including all generated image sizes) are pushed to cloud storage automatically, with attachment URLs and `srcset` rewritten to serve from your CDN. That means less storage used on your web host and faster image delivery for visitors.
 
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+It's built for bloggers who want a folder per post, photographers organizing shoots by client and date, ecommerce/WooCommerce store owners who need product images sorted by category and brand, agencies managing media for multiple clients in one install, and any WordPress site with a media library that has grown out of control.
 
-## Add your files
+## Key Features
 
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
+- **Drag-and-drop folder UI** — move files between folders, or drag a whole folder to reorganize your hierarchy, right inside `wp-admin`.
+- **Unlimited nested media folders** — build a multi-level structure (e.g. Clients → Client Name → Shoot Type) with no depth limit, powered by a custom attachment taxonomy.
+- **Folder management tools** — create, rename, delete (including multi-select bulk delete), copy/paste, and cut/paste folders.
+- **AWS S3 connector** — connect an S3 bucket, store credentials securely, and automatically upload new attachments (originals and every generated size) to your bucket.
+- **Cloudflare R2 connector** — the same automatic offload workflow for R2's S3-compatible storage, using your Cloudflare account ID and bucket.
+- **Automatic CDN upload with URL and srcset rewriting** — once a provider is connected, `wp_get_attachment_url` and responsive `srcset` output are rewritten to point at your CDN/public URL instead of your server.
+- **Media Library REST API and AJAX filtering** — folder-aware filtering is wired into `ajax_query_attachments_args`, `rest_media_query`, and a custom `aioml/v1/media/remove-from-folder` REST route, so folder filtering works in the classic media modal, the block editor media picker, and custom REST clients.
+- **React-based folder interface** — a modern, embedded React UI for browsing and managing folders alongside the standard media grid and list views.
+- **Page builder and post editor integration** — browse and filter folders from within the post/page editor and popular page builders, not just the Media Library screen.
+- **Encrypted credential storage** — S3/R2 secret keys are encrypted at rest using your site's WordPress auth keys.
 
-```
-cd existing_repo
-git remote add origin https://code.zeeyes.com/wordpress/aio-media-library-manager.git
-git branch -M main
-git push -uf origin main
-```
+## Use Cases
 
-## Integrate with your tools
+- **Bloggers** — keep a dedicated folder for each post's images and documents instead of hunting through hundreds of unsorted uploads.
+- **Photographers** — organize thousands of images into folders by shoot type (weddings, portraits, landscapes) with client and date subfolders, so any photo can be found in seconds.
+- **Ecommerce / WooCommerce sites** — sort product images by category and sub-categorize by brand for fast, confusion-free product image management.
+- **Agencies and multi-client sites** — separate client media into isolated folder trees within a single WordPress install.
+- **High-traffic or media-heavy sites** — offload uploads to S3 or Cloudflare R2 to reduce server storage usage and bandwidth, and serve images from a CDN for faster page loads.
 
-- [ ] [Set up project integrations](https://code.zeeyes.com/wordpress/aio-media-library-manager/-/settings/integrations)
+## Requirements
 
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
-
-***
-
-# Editing this README
-
-When you're ready to make this README your own, just edit this file and use the handy template below (or feel free to structure it however you want - this is just a starting point!). Thanks to [makeareadme.com](https://www.makeareadme.com/) for this template.
-
-## Suggestions for a good README
-
-Every project is different, so consider which of these sections apply to yours. The sections used in the template are suggestions for most open source projects. Also keep in mind that while a README can be too long and detailed, too long is better than too short. If you think your README is too long, consider utilizing another form of documentation rather than cutting out information.
-
-## Name
-Choose a self-explaining name for your project.
-
-## Description
-Let people know what your project can do specifically. Provide context and add a link to any reference visitors might be unfamiliar with. A list of Features or a Background subsection can also be added here. If there are alternatives to your project, this is a good place to list differentiating factors.
-
-## Badges
-On some READMEs, you may see small images that convey metadata, such as whether or not all the tests are passing for the project. You can use Shields to add some to your README. Many services also have instructions for adding a badge.
-
-## Visuals
-Depending on what you are making, it can be a good idea to include screenshots or even a video (you'll frequently see GIFs rather than actual videos). Tools like ttygif can help, but check out Asciinema for a more sophisticated method.
+- **WordPress:** 6.0 or higher
+- **PHP:** 5.2.4 or higher (PHP 7.4+ recommended for the S3/R2 connectors)
+- **Other requirements:** An AWS S3 or Cloudflare R2 account with a bucket and access credentials is only needed if you want to use the cloud storage / CDN offload features — folder organization works with no external service.
 
 ## Installation
-Within a particular ecosystem, there may be a common way of installing things, such as using Yarn, NuGet, or Homebrew. However, consider the possibility that whoever is reading your README is a novice and would like more guidance. Listing specific steps helps remove ambiguity and gets people to using your project as quickly as possible. If it only runs in a specific context like a particular programming language version or operating system or has dependencies that have to be installed manually, also add a Requirements subsection.
+
+### Install from WordPress
+
+1. Download the plugin ZIP file.
+2. Go to WordPress Admin → Plugins → Add New → Upload Plugin.
+3. Upload the ZIP, click **Install Now**, then **Activate**.
+
+### Manual Installation
+
+1. Download or clone this repository.
+2. Upload the plugin folder to `/wp-content/plugins/`.
+3. Activate **AIO Media Library Manager** from WordPress Admin → Plugins.
+
+## Configuration / Setup
+
+1. After activation, open **Media → AIOML Settings** in the WordPress admin.
+2. To organize media, go to the **Media Library** screen — a folder sidebar appears alongside the existing media grid. Use **Create Folder** to add your first folder, and drag files or folders to reorganize.
+3. To enable cloud storage/CDN offload, open the **AWS S3** or **Cloudflare R2** card on the AIOML Settings page and click **Connect**.
+   - For **AWS S3**: enter your Access Key ID, Secret Access Key, Bucket Name, and Region.
+   - For **Cloudflare R2**: enter your Access Key ID, Secret Access Key, Bucket Name, and Cloudflare Account ID.
+4. Optionally set a **Public URL / Custom Domain** so rewritten attachment and `srcset` URLs point to your own CDN domain instead of the default bucket endpoint.
+5. Click **Test Connection** to verify the bucket is reachable, then **Save Credentials**. New uploads (and their generated image sizes) will be pushed to the connected provider automatically.
 
 ## Usage
-Use examples liberally, and show the expected output if you can. It's helpful to have inline the smallest example of usage that you can demonstrate, while providing links to more sophisticated examples if they are too long to reasonably include in the README.
 
-## Support
-Tell people where they can go to for help. It can be any combination of an issue tracker, a chat room, an email address, etc.
+Once folders are set up, the Media Library screen shows a folder tree on one side and the standard media grid/list on the other. Select a folder to filter the grid to just that folder's files, drag and drop uploads between folders, or use bulk actions to move, copy/paste, cut/paste, or multi-select delete folders. The same folder filtering is available from the media picker in the block editor and post editor, and programmatically through the WordPress REST API (`wp/v2/media` with folder-aware query filtering, plus the plugin's own `aioml/v1/media/remove-from-folder` endpoint) — useful if you're building a custom media browser or extending the media library UI.
+
+## Supported Integrations
+
+- WordPress Media Library (Grid and List views)
+- WordPress Block Editor (Gutenberg) media picker
+- WordPress REST API (`wp/v2/media`)
+- Popular WordPress page builders (folder browsing within the page builder media interface)
+- AWS S3
+- Cloudflare R2
+
+## Screenshots / Demo
+
+![AIO Media Library Manager Dashboard](assets/plugin-dashboard.png)
+
+*All-In-One Media Library Manager view — folder sidebar with drag-and-drop media organization.*
+
+## Documentation
+
+For setup guidance and support resources, visit [smackcoders.com](https://www.smackcoders.com/wordpress.html) or see the Configuration/Setup and Usage sections above.
+
+## Frequently Asked Questions
+
+### What is AIO Media Library Manager?
+AIO Media Library Manager is a WordPress plugin that helps you organize your media files — images, videos, documents, and more — within the WordPress media library by letting you create folders, making it much easier to find what you need.
+
+### Can I create nested folders?
+Yes. The plugin supports unlimited nested media folders, so you can build multi-level structures like Client → Shoot Type → Date without any depth limit.
+
+### Does it support Cloudflare R2?
+Yes. Connect a Cloudflare R2 bucket with your account ID and credentials, and new uploads are automatically pushed to R2 with attachment URLs rewritten to your CDN.
+
+### Does it support AWS S3?
+Yes. Connect an AWS S3 bucket with your access key, secret key, region, and bucket name to enable automatic upload and CDN offload.
+
+### Will offloading break my existing image URLs?
+No. URL rewriting only applies to attachments that have been uploaded to the connected provider; if a public URL/custom domain isn't configured or an object hasn't been offloaded, the plugin falls back to the original WordPress-hosted URL.
+
+### Can I filter media by folder in the post editor?
+Yes. Folder-aware filtering is wired into both the classic AJAX media query and the REST-powered block editor media picker, so you can browse folders directly from the post/page editor.
+
+### Does it support unlimited folders?
+Yes, there's no limit on the number of folders or nesting depth you can create.
 
 ## Roadmap
-If you have ideas for releases in the future, it is a good idea to list them in the README.
+
+- Additional CDN/cloud storage provider connectors
+- Expanded page builder integrations
+- Folder-level access/permission controls
+
+## Changelog
+
+### 1.0.0
+- Initial release.
+- Drag-and-drop folder-based media organization with unlimited nested folders.
+- Folder create, rename, delete, bulk delete, copy/paste, and cut/paste.
+- Media Library REST API and AJAX query filtering by folder.
+- AWS S3 and Cloudflare R2 connectors with automatic upload and CDN URL/srcset rewriting.
+- Page builder and block editor media picker integration.
+
+## Security
+
+If you discover a security vulnerability in AIO Media Library Manager, please do not disclose it publicly via GitHub Issues. Instead, report it directly to the Smackcoders team at [smackcoders.com/contact-us.html](https://www.smackcoders.com/contact-us.html) so it can be investigated and patched responsibly. S3/R2 secret keys are encrypted at rest and never displayed in plaintext once saved.
 
 ## Contributing
-State if you are open to contributions and what your requirements are for accepting them.
 
-For people who want to make changes to your project, it's helpful to have some documentation on how to get started. Perhaps there is a script that they should run or some environment variables that they need to set. Make these steps explicit. These instructions could also be useful to your future self.
+Bug reports, feature suggestions, and pull requests are welcome. Please open a GitHub Issue describing the bug or feature request with enough detail (WordPress/PHP version, steps to reproduce) for it to be investigated, and submit pull requests against this repository for code changes.
 
-You can also document commands to lint the code or run tests. These steps help to ensure high code quality and reduce the likelihood that the changes inadvertently break something. Having instructions for running tests is especially helpful if it requires external setup, such as starting a Selenium server for testing in a browser.
+## Support
 
-## Authors and acknowledgment
-Show your appreciation to those who have contributed to the project.
+For help, bug reports, or feature requests, open an issue in this repository's GitHub Issues, or reach out via the [Smackcoders contact page](https://www.smackcoders.com/contact-us.html).
 
 ## License
-For open source projects, say how it is licensed.
 
-## Project status
-If you have run out of energy or time for your project, put a note at the top of the README saying that development has slowed down or stopped completely. Someone may choose to fork your project or volunteer to step in as a maintainer or owner, allowing your project to keep going. You can also make an explicit request for maintainers.
+Licensed under the GNU General Public License v2 (or later). See [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html) for full license text.
+
+## Disclaimer
+
+AWS S3 and Cloudflare R2 are trademarks of their respective owners (Amazon Web Services, Inc. and Cloudflare, Inc.). AIO Media Library Manager is an independent plugin that integrates with these third-party services and is not officially affiliated with, endorsed by, or sponsored by Amazon or Cloudflare. Use of these services is subject to their own terms and pricing.
+
+## Author / Maintainer
+
+Developed and maintained by [Smackcoders](https://www.smackcoders.com/wordpress.html).
