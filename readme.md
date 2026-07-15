@@ -1,148 +1,183 @@
 # AIO Media Library Manager
 
-A WordPress media library folders plugin that lets you organize your media library into unlimited nested folders with drag-and-drop, then offload uploads to AWS S3 or Cloudflare R2 with automatic CDN URL rewriting.
+Organize the WordPress media library into nested drag-and-drop folders, then offload uploads to AWS S3 or Cloudflare R2 with automatic CDN rewriting.
+
+[![License: GPL v2](https://img.shields.io/badge/License-GPL%20v2-blue.svg)](https://www.gnu.org/licenses/gpl-2.0.html)
+[![WordPress](https://img.shields.io/badge/WordPress-6.0%2B-21759b.svg)](https://wordpress.org/)
+[![PHP](https://img.shields.io/badge/PHP-7.0%2B-777bb4.svg)](https://www.php.net/)
+
+## Table of Contents
+
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Use Cases](#use-cases)
+- [Requirements](#requirements)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Usage](#usage)
+- [Supported Integrations](#supported-integrations)
+- [Screenshots](#screenshots)
+- [Documentation](#documentation)
+- [FAQ](#faq)
+- [Changelog](#changelog)
+- [Security](#security)
+- [Contributing](#contributing)
+- [Support](#support)
+- [License](#license)
+- [Disclaimer](#disclaimer)
+- [Author](#author)
 
 ## Overview
 
-The default WordPress media library dumps every image, video, PDF, and document into one long, unsorted grid. As a site grows, finding a specific file becomes a scavenger hunt. **AIO Media Library Manager** solves this by adding a real folder structure to the media library — a drag and drop media organizer built on top of WordPress's native attachment taxonomy, so folders behave like first-class citizens across the admin, the block editor, and the REST API.
+The default WordPress media library drops every image, video, PDF, and document into a single flat grid. On a small site that is fine. On a site with thousands of uploads, finding one file turns into scrolling and guessing.
 
-Beyond organization, the plugin also works as a WordPress CDN offload plugin: connect an AWS S3 or Cloudflare R2 bucket and new uploads (including all generated image sizes) are pushed to cloud storage automatically, with attachment URLs and `srcset` rewritten to serve from your CDN. That means less storage used on your web host and faster image delivery for visitors.
+AIO Media Library Manager adds a real folder structure on top of the library. Folders are built on a hierarchical WordPress taxonomy (`attachment_category`), so they behave consistently across the Media Library grid, the list view, the block editor media picker, and the REST API rather than living in a disconnected sidebar. You create folders, drag files into them, and filter the grid down to a single folder in one click.
 
-It's built for bloggers who want a folder per post, photographers organizing shoots by client and date, ecommerce/WooCommerce store owners who need product images sorted by category and brand, agencies managing media for multiple clients in one install, and any WordPress site with a media library that has grown out of control.
+The plugin also doubles as a cloud offload tool. Connect an AWS S3 or Cloudflare R2 bucket and every new upload, including all generated image sizes, is pushed to that bucket automatically. Attachment URLs and responsive `srcset` output are rewritten to serve from your bucket or custom CDN domain, which lightens storage on your web host and speeds up image delivery. The connectors use the AWS SDK for PHP when it is available and fall back to native, signed (AWS Signature V4) HTTP requests when it is not, so offloading works on a wide range of hosts.
 
 ## Key Features
 
-- **Drag-and-drop folder UI** — move files between folders, or drag a whole folder to reorganize your hierarchy, right inside `wp-admin`.
-- **Unlimited nested media folders** — build a multi-level structure (e.g. Clients → Client Name → Shoot Type) with no depth limit, powered by a custom attachment taxonomy.
-- **Folder management tools** — create, rename, delete (including multi-select bulk delete), copy/paste, and cut/paste folders.
-- **AWS S3 connector** — connect an S3 bucket, store credentials securely, and automatically upload new attachments (originals and every generated size) to your bucket.
-- **Cloudflare R2 connector** — the same automatic offload workflow for R2's S3-compatible storage, using your Cloudflare account ID and bucket.
-- **Automatic CDN upload with URL and srcset rewriting** — once a provider is connected, `wp_get_attachment_url` and responsive `srcset` output are rewritten to point at your CDN/public URL instead of your server.
-- **Media Library REST API and AJAX filtering** — folder-aware filtering is wired into `ajax_query_attachments_args`, `rest_media_query`, and a custom `aioml/v1/media/remove-from-folder` REST route, so folder filtering works in the classic media modal, the block editor media picker, and custom REST clients.
-- **React-based folder interface** — a modern, embedded React UI for browsing and managing folders alongside the standard media grid and list views.
-- **Page builder and post editor integration** — browse and filter folders from within the post/page editor and popular page builders, not just the Media Library screen.
-- **Encrypted credential storage** — S3/R2 secret keys are encrypted at rest using your site's WordPress auth keys.
+- **Drag-and-drop organization** — move files into folders, or drag a folder to restructure the hierarchy, directly inside `wp-admin`.
+- **Unlimited nested folders** — build multi-level structures such as Clients to Client Name to Shoot Type, with no depth limit, backed by a hierarchical attachment taxonomy.
+- **Full folder management** — create, rename, delete, multi-select bulk delete, copy/paste (which duplicates the folder subtree and its media assignments), and cut/paste to move folders.
+- **AWS S3 connector** — store bucket credentials, test the connection, and upload new attachments (originals and every generated size) to S3 automatically.
+- **Cloudflare R2 connector** — the same offload workflow against R2's S3-compatible API, using your Cloudflare Account ID and bucket.
+- **Automatic URL and srcset rewriting** — once a provider is active, `wp_get_attachment_url` and responsive `srcset` output point at your bucket or custom CDN domain instead of your server.
+- **Folder-aware filtering everywhere** — folder filters are wired into the classic media modal (`ajax_query_attachments_args`), the Media Library list view (`pre_get_posts`), the block editor picker (`rest_media_query`), and a dedicated `aioml/v1/media/remove-from-folder` REST route.
+- **React folder interface** — an embedded React UI for browsing and managing folders alongside the standard media grid and list views.
+- **Post editor and page builder access** — browse and filter folders from the post/page editor and the WordPress customizer, not only the Media Library screen.
+- **Encrypted credential storage** — S3 and R2 secret keys are encrypted at rest with AES-256-CBC, keyed from your site's WordPress authentication salts, and are never returned to the browser once saved.
 
 ## Use Cases
 
-- **Bloggers** — keep a dedicated folder for each post's images and documents instead of hunting through hundreds of unsorted uploads.
-- **Photographers** — organize thousands of images into folders by shoot type (weddings, portraits, landscapes) with client and date subfolders, so any photo can be found in seconds.
-- **Ecommerce / WooCommerce sites** — sort product images by category and sub-categorize by brand for fast, confusion-free product image management.
-- **Agencies and multi-client sites** — separate client media into isolated folder trees within a single WordPress install.
-- **High-traffic or media-heavy sites** — offload uploads to S3 or Cloudflare R2 to reduce server storage usage and bandwidth, and serve images from a CDN for faster page loads.
+- **Bloggers** — keep one folder per post for its images and documents instead of scrolling through hundreds of unsorted uploads.
+- **Photographers** — file thousands of images by shoot type, then subdivide by client and date, so any photo is a click away.
+- **WooCommerce and ecommerce stores** — sort product images by category and by brand for clean, fast product image management.
+- **Agencies and multi-client sites** — isolate each client's media in its own folder tree within a single WordPress install.
+- **High-traffic and media-heavy sites** — offload uploads to S3 or R2 to cut server storage and bandwidth, and serve images from a CDN for faster page loads.
 
 ## Requirements
 
-- **WordPress:** 6.0 or higher
-- **PHP:** 5.2.4 or higher (PHP 7.4+ recommended for the S3/R2 connectors)
-- **Other requirements:** An AWS S3 or Cloudflare R2 account with a bucket and access credentials is only needed if you want to use the cloud storage / CDN offload features — folder organization works with no external service.
+| Requirement | Version |
+| --- | --- |
+| WordPress | 6.0 or higher |
+| PHP | 7.0 or higher (7.2.3+ recommended for the S3/R2 connectors) |
+| Cloud storage account | AWS S3 or Cloudflare R2 (optional) |
+
+Folder organization works with no external service. An AWS S3 or Cloudflare R2 account with a bucket and access credentials is only required if you want to use the cloud storage and CDN offload features.
 
 ## Installation
 
 ### Install from WordPress
 
 1. Download the plugin ZIP file.
-2. Go to WordPress Admin → Plugins → Add New → Upload Plugin.
-3. Upload the ZIP, click **Install Now**, then **Activate**.
+2. In the WordPress admin, go to **Plugins → Add New → Upload Plugin**.
+3. Choose the ZIP, click **Install Now**, then **Activate**.
 
 ### Manual Installation
 
 1. Download or clone this repository.
 2. Upload the plugin folder to `/wp-content/plugins/`.
-3. Activate **AIO Media Library Manager** from WordPress Admin → Plugins.
+3. Go to **Plugins** in the WordPress admin and activate **AIO Media Library Manager**.
 
-## Configuration / Setup
+To use the S3 or R2 connectors with the AWS SDK for PHP, install Composer dependencies from the plugin directory:
+
+```bash
+composer install
+```
+
+If the SDK is not present, the connectors fall back to native signed HTTP requests, so this step is optional.
+
+## Configuration
 
 1. After activation, open **Media → AIOML Settings** in the WordPress admin.
-2. To organize media, go to the **Media Library** screen — a folder sidebar appears alongside the existing media grid. Use **Create Folder** to add your first folder, and drag files or folders to reorganize.
-3. To enable cloud storage/CDN offload, open the **AWS S3** or **Cloudflare R2** card on the AIOML Settings page and click **Connect**.
+2. To organize media, open the **Media Library** screen. A folder panel appears next to the media grid. Use it to create your first folder, then drag files or folders to arrange them.
+3. To enable cloud offload, open the **Connectors** page (Media → AIOML Settings) and click **Connect** on the **AWS S3** or **Cloudflare R2** card.
    - For **AWS S3**: enter your Access Key ID, Secret Access Key, Bucket Name, and Region.
-   - For **Cloudflare R2**: enter your Access Key ID, Secret Access Key, Bucket Name, and Cloudflare Account ID.
-4. Optionally set a **Public URL / Custom Domain** so rewritten attachment and `srcset` URLs point to your own CDN domain instead of the default bucket endpoint.
-5. Click **Test Connection** to verify the bucket is reachable, then **Save Credentials**. New uploads (and their generated image sizes) will be pushed to the connected provider automatically.
+   - For **Cloudflare R2**: enter your Access Key ID, Secret Access Key, Account ID, and Bucket Name (region is fixed to `auto`).
+4. Optionally set a **Public URL / Custom Domain** so rewritten attachment and `srcset` URLs point to your own CDN domain instead of the default bucket endpoint. R2 requires a public URL, since it has no default public bucket endpoint.
+5. Click **Test Connection** to confirm the bucket is reachable, then **Save Credentials**. From then on, new uploads and their generated image sizes are pushed to the active provider automatically.
 
 ## Usage
 
-Once folders are set up, the Media Library screen shows a folder tree on one side and the standard media grid/list on the other. Select a folder to filter the grid to just that folder's files, drag and drop uploads between folders, or use bulk actions to move, copy/paste, cut/paste, or multi-select delete folders. The same folder filtering is available from the media picker in the block editor and post editor, and programmatically through the WordPress REST API (`wp/v2/media` with folder-aware query filtering, plus the plugin's own `aioml/v1/media/remove-from-folder` endpoint) — useful if you're building a custom media browser or extending the media library UI.
+With folders in place, the Media Library shows a folder tree on one side and the standard grid or list on the other. Select a folder to filter the view to that folder's files. Drag uploads between folders, or use folder actions to rename, copy/paste, cut/paste, or bulk-delete.
+
+The same folder filtering is available from the media picker in the block editor and post editor, and programmatically through the WordPress REST API. Request `wp/v2/media` with an `attachment_category` term ID to return only that folder's attachments, or call the plugin's `aioml/v1/media/remove-from-folder` endpoint (POST, with `media_id` and `term_id`) to detach a file from a folder. This is useful when building a custom media browser or extending the media library UI.
 
 ## Supported Integrations
 
-- WordPress Media Library (Grid and List views)
-- WordPress Block Editor (Gutenberg) media picker
-- WordPress REST API (`wp/v2/media`)
-- Popular WordPress page builders (folder browsing within the page builder media interface)
+- WordPress Media Library (grid and list views)
+- WordPress block editor (Gutenberg) media picker
+- WordPress REST API (`wp/v2/media` with folder-aware filtering)
+- WordPress post/page editor and customizer
 - AWS S3
 - Cloudflare R2
 
-## Screenshots / Demo
+## Screenshots
 
-![AIO Media Library Manager Dashboard](assets/plugin-dashboard.png)
-
-*All-In-One Media Library Manager view — folder sidebar with drag-and-drop media organization.*
+This repository does not bundle screenshot images. A live view of the folder sidebar and drag-and-drop organization is available on the [plugin page](https://www.smackcoders.com/wordpress.html) and the [GitHub repository](https://github.com/Smackcoders/AIO-Media-Library-Manager).
 
 ## Documentation
 
-For setup guidance and support resources, visit [smackcoders.com](https://www.smackcoders.com/wordpress.html) or see the Configuration/Setup and Usage sections above.
+For setup guidance and support resources, visit [smackcoders.com](https://www.smackcoders.com/wordpress.html), or follow the Configuration and Usage sections above.
 
-## Frequently Asked Questions
+## FAQ
 
 ### What is AIO Media Library Manager?
-AIO Media Library Manager is a WordPress plugin that helps you organize your media files — images, videos, documents, and more — within the WordPress media library by letting you create folders, making it much easier to find what you need.
+
+It is a WordPress plugin that organizes your media files, including images, videos, and documents, into folders inside the media library so you can find what you need without scrolling through an unsorted grid.
 
 ### Can I create nested folders?
-Yes. The plugin supports unlimited nested media folders, so you can build multi-level structures like Client → Shoot Type → Date without any depth limit.
 
-### Does it support Cloudflare R2?
-Yes. Connect a Cloudflare R2 bucket with your account ID and credentials, and new uploads are automatically pushed to R2 with attachment URLs rewritten to your CDN.
+Yes. Folders use a hierarchical taxonomy, so you can nest them as deeply as you like, for example Client to Shoot Type to Date, with no depth limit.
 
-### Does it support AWS S3?
-Yes. Connect an AWS S3 bucket with your access key, secret key, region, and bucket name to enable automatic upload and CDN offload.
+### Does it support AWS S3 and Cloudflare R2?
+
+Yes. Connect an S3 bucket with your access key, secret key, region, and bucket name, or an R2 bucket with your access key, secret key, Account ID, and bucket name. New uploads are then pushed to the provider automatically, with URLs rewritten to your CDN.
 
 ### Will offloading break my existing image URLs?
-No. URL rewriting only applies to attachments that have been uploaded to the connected provider; if a public URL/custom domain isn't configured or an object hasn't been offloaded, the plugin falls back to the original WordPress-hosted URL.
+
+No. URL rewriting applies only to attachments that have actually been offloaded to the connected provider. If an object has not been uploaded, or no public URL is configured for R2, the plugin serves the original WordPress-hosted URL.
 
 ### Can I filter media by folder in the post editor?
-Yes. Folder-aware filtering is wired into both the classic AJAX media query and the REST-powered block editor media picker, so you can browse folders directly from the post/page editor.
 
-### Does it support unlimited folders?
-Yes, there's no limit on the number of folders or nesting depth you can create.
+Yes. Folder filtering is wired into both the classic AJAX media query and the REST-powered block editor picker, so you can browse folders directly from the post or page editor.
 
-## Roadmap
+### Are my cloud credentials stored securely?
 
-- Additional CDN/cloud storage provider connectors
-- Expanded page builder integrations
-- Folder-level access/permission controls
+Secret keys are encrypted at rest with AES-256-CBC, keyed from your site's WordPress authentication salts, and are never sent back to the browser after they are saved.
 
 ## Changelog
 
 ### 1.0.0
+
 - Initial release.
-- Drag-and-drop folder-based media organization with unlimited nested folders.
+- Drag-and-drop folder organization with unlimited nested folders.
 - Folder create, rename, delete, bulk delete, copy/paste, and cut/paste.
-- Media Library REST API and AJAX query filtering by folder.
+- Folder-aware filtering across the media grid, list view, block editor picker, and REST API.
 - AWS S3 and Cloudflare R2 connectors with automatic upload and CDN URL/srcset rewriting.
-- Page builder and block editor media picker integration.
+- Post/page editor and customizer media picker integration.
 
 ## Security
 
-If you discover a security vulnerability in AIO Media Library Manager, please do not disclose it publicly via GitHub Issues. Instead, report it directly to the Smackcoders team at [smackcoders.com/contact-us.html](https://www.smackcoders.com/contact-us.html) so it can be investigated and patched responsibly. S3/R2 secret keys are encrypted at rest and never displayed in plaintext once saved.
+If you discover a security vulnerability, please do not disclose it publicly through GitHub Issues. Report it directly to the Smackcoders team through the [contact page](https://www.smackcoders.com/contact-us.html) so it can be investigated and patched responsibly. Cloud credentials are encrypted at rest and are never displayed in plaintext once saved.
 
 ## Contributing
 
-Bug reports, feature suggestions, and pull requests are welcome. Please open a GitHub Issue describing the bug or feature request with enough detail (WordPress/PHP version, steps to reproduce) for it to be investigated, and submit pull requests against this repository for code changes.
+Bug reports, feature suggestions, and pull requests are welcome. Open a [GitHub issue](https://github.com/Smackcoders/AIO-Media-Library-Manager/issues) with enough detail to reproduce the problem, including your WordPress and PHP versions and the steps you took, and submit pull requests against this repository for code changes.
 
 ## Support
 
-For help, bug reports, or feature requests, open an issue in this repository's GitHub Issues, or reach out via the [Smackcoders contact page](https://www.smackcoders.com/contact-us.html).
+For help, bug reports, or feature requests, open an issue on the [GitHub repository](https://github.com/Smackcoders/AIO-Media-Library-Manager/issues) or reach out through the [Smackcoders contact page](https://www.smackcoders.com/contact-us.html).
 
 ## License
 
-Licensed under the GNU General Public License v2 (or later). See [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html) for full license text.
+Licensed under the GNU General Public License v2 (or later). See [https://www.gnu.org/licenses/gpl-2.0.html](https://www.gnu.org/licenses/gpl-2.0.html) for the full license text.
 
 ## Disclaimer
 
-AWS S3 and Cloudflare R2 are trademarks of their respective owners (Amazon Web Services, Inc. and Cloudflare, Inc.). AIO Media Library Manager is an independent plugin that integrates with these third-party services and is not officially affiliated with, endorsed by, or sponsored by Amazon or Cloudflare. Use of these services is subject to their own terms and pricing.
+AWS S3 and Cloudflare R2 are trademarks of their respective owners (Amazon Web Services, Inc. and Cloudflare, Inc.). AIO Media Library Manager is an independent plugin that integrates with these third-party services and is not affiliated with, endorsed by, or sponsored by Amazon or Cloudflare. Use of these services is subject to their own terms and pricing.
 
-## Author / Maintainer
+## Author
 
 Developed and maintained by [Smackcoders](https://www.smackcoders.com/wordpress.html).
